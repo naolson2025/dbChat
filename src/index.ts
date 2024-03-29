@@ -1,18 +1,13 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { Database } from "bun:sqlite";
 import { tools } from "./tools";
+import { queryDB } from "./query-db";
 
-const db = new Database("store.sqlite");
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_KEY || "");
 
-const model = genAI.getGenerativeModel({ model: "gemini-pro", tools: tools });
-
-/*
-  You have a database named store.sqlite.
-  The database has a table named users with columns id, name, and email.
-  Respond to all questions with the SQL query that would answer the question.
-  The response should be in json format with a key-value pair of 'query' and the SQL query.
-*/
+const model = genAI.getGenerativeModel(
+	{ model: "gemini-pro", tools: tools },
+	{ apiVersion: "v1beta" },
+);
 
 const run = async () => {
 	const prompt = `
@@ -22,12 +17,14 @@ const run = async () => {
   `;
 
 	const result = await model.generateContent(prompt);
-	console.log(result.response.functionCall);
 	const response = result.response;
 	const text = response.text();
-	console.log(text);
-	// const res = db.query(text);
-	// console.log(res);
+
+  // @ts-ignore
+  const funcCall = response.candidates[0].content.parts[0].functionCall?.args.sqlQuery;
+  console.log(funcCall);
+	const res = await queryDB(funcCall.replace(/"/g, ""));
+	console.log(res);
 };
 
 run();
