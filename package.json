@@ -1,0 +1,16 @@
+{
+  "name": "dbchat",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@biomejs/biome": "^1.6.3",
+    "@faker-js/faker": "^8.4.1",
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.3.1"
+  }
+}
