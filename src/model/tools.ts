@@ -20,6 +20,20 @@ export const tools: FunctionDeclarationsTool[] = [
           required: ["sqlQuery"],
         },
       },
+      {
+        name: "getColumns",
+        description: "Get the columns for a table in the store.sqlite database",
+        parameters: {
+          type: FunctionDeclarationSchemaType.STRING,
+          properties: {
+            table: {
+              type: FunctionDeclarationSchemaType.STRING,
+              description: "The name of the table",
+            },
+          },
+          required: ["table"],
+        },
+      }
     ],
   },
 ];

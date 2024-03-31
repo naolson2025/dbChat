@@ -1,4 +1,4 @@
-import { queryDB } from "./db/query-db";
+import { queryDB, getColumns } from "./db/query-db";
 import { chat, getQuery } from "./model/model";
 import { promptUser } from "./utils/user-prompts";
 
@@ -18,6 +18,9 @@ const run = async () => {
       const result = await chat.sendMessage(msg);
       const query = getQuery(result);
       let text = result?.response?.text();
+
+      // The model is requesting column names from a table
+      // TODO: Implement the getColumns function in src/db/query-db.ts
 
       // The model is requesting a query to be executed
       if (query) {

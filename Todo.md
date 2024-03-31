@@ -5,7 +5,7 @@
 - Prevent LLM from running any `DROP` or `DELETE` commands
 
 ### Tools
-- Give it a function to get the DB Table columns
+- [x] Give it a function to get the DB Table columns
 
 ### Features
 - Display query results in a table
