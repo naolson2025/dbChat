@@ -10,7 +10,7 @@
 ### Features
 - Display query results in a table
 - Add chat history
-- add prompt loop until I have a front end
+- [x] add prompt loop until I have a front end
 
 ### Frontend
 - chat interface

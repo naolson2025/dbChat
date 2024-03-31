@@ -1,45 +1,42 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { tools } from "./tools";
-import { queryDB } from "./query-db";
-
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_KEY || "");
-
-const model = genAI.getGenerativeModel(
-	{ model: "gemini-pro", tools: tools },
-	{ apiVersion: "v1beta" },
-);
+import { queryDB } from "./db/query-db";
+import { chat, getQuery } from "./model/model";
+import { promptUser } from "./utils/user-prompts";
 
 const run = async () => {
-	const chat = model.startChat({
-		history: [
-			{
-				role: "user",
-				parts: [
-					{ text: "You are a sqlite database administrator." },
-					{
-						text: "There are 3 tables in the database: users, products, and orders.",
-					},
-				],
-			},
-      {
-        role: "model",
-        parts: [
-          { text: "How can I assist you?" }
-        ]
+	console.log("I'm your DB assistant how can I help? (type 'exit' to quit)");
+
+	let exit = false;
+	while (!exit) {
+    try {
+      const msg = await promptUser();
+
+      if (msg === "exit" || !msg) {
+        exit = true;
+        break;
       }
-		],
-	});
 
-  const msg = "How many users do I have?";
-  const result = await chat.sendMessage(msg);
-  const response = result.response;
+      const result = await chat.sendMessage(msg);
+      const query = getQuery(result);
+      let text = result?.response?.text();
 
-  // check if the model is asking for a function call
-  // @ts-ignore
-  const funcCall = response.candidates[0].content.parts[0].functionCall?.args.sqlQuery;
-  console.log(funcCall);
-	const res = await queryDB(funcCall.replace(/"/g, ""));
-	console.log(res);
+      // The model is requesting a query to be executed
+      if (query) {
+        console.log(query);
+        const res = await queryDB(query);
+        console.log(res);
+        const result2 = await chat.sendMessage(JSON.stringify(res));
+        text = result2?.response?.text();
+      }
+
+      // The model has a response to display
+      if (text) {
+        console.log(text);
+      }
+    } catch (error) {
+      console.error(error);
+      console.log("An error occurred. Please try again.");
+    }
+	}
 };
 
 run();
