@@ -7,7 +7,7 @@ export const tools: FunctionDeclarationsTool[] = [
   {
     functionDeclarations: [
       {
-        name: "queryDB",
+        name: "runQuery",
         description: "Query the store.sqlite database",
         parameters: {
           type: FunctionDeclarationSchemaType.STRING,

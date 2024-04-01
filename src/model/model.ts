@@ -1,6 +1,5 @@
 import {
 	GoogleGenerativeAI,
-	type GenerateContentResult,
 } from "@google/generative-ai";
 import { tools } from "./tools";
 
@@ -20,12 +19,12 @@ export const chat = model.startChat({
 				{
 					text: "There are 3 tables in the database: users, products, and orders. Only run queries on these tables.",
 				},
-        {
-          text: "Do not make assumptions about column names or types, use the tools you are given."
-        },
-        {
-          text: "Do not run any queries that modify the database."
-        },
+				{
+					text: "Do not make assumptions about column names or types, use the tools you are given.",
+				},
+				{
+					text: "Do not run any queries that modify the database.",
+				},
 			],
 		},
 		{
@@ -34,16 +33,3 @@ export const chat = model.startChat({
 		},
 	],
 });
-
-export const getQuery = (
-	modelResp: GenerateContentResult,
-): string | undefined => {
-	const args = modelResp?.response?.functionCall()?.args as {
-		sqlQuery?: string;
-	};
-	if (!args) {
-		return;
-	}
-
-	return args?.sqlQuery?.replace(/"/g, "");
-};

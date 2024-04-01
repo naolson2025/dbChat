@@ -9,9 +9,11 @@
 
 ### Features
 - Display query results in a table
-- Add chat history
+- [x] Add chat history
 - [x] add prompt loop until I have a front end
+- [ ] Fix: Currently there is one global chat this would blend history for all users 
 
 ### Frontend
 - chat interface
 - Should have project summary at the top
+ 
