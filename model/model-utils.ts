@@ -33,30 +33,32 @@ export const handleRequestedTool = async (
 };
 
 export const processUserInput = async (msg: string) => {
-  let resp = "LLM failed to return a response";
-  let result = await chat.sendMessage(msg);
-  
-  for (let i = 0; i < 5; i++) {
-    if (result?.response?.text()) {
-      resp = result.response.text();
-      break;
-    }
-    
-    try {
-      // if we have data, that means a tool was used
-      const data = await handleRequestedTool(result);
-      if (data) {
-        result = await chat.sendMessage(JSON.stringify(data));
-      }
-    } catch (error) {
-      if (error instanceof SQLiteError) {
-        result = await chat.sendMessage(error.message);
-      } else {
-        // throw this so it can be caught in run() index.ts
-        throw error;
-      }
-    }
-  }
+	let resp = "LLM failed to return a response";
+	let result = await chat.sendMessage(msg);
+
+	for (let i = 0; i < 5; i++) {
+		if (result?.response?.text()) {
+			resp = result.response.text();
+			break;
+		}
+
+		try {
+			// if we have data, that means a tool was used
+			const data = await handleRequestedTool(result);
+			if (data) {
+				result = await chat.sendMessage(JSON.stringify(data));
+			}
+		} catch (error) {
+			if (error instanceof SQLiteError) {
+				result = await chat.sendMessage(
+					`The query did not work, provide a new query, here is the error: ${error.message}`,
+				);
+			} else {
+				// throw this so it can be caught in run() index.ts
+				throw error;
+			}
+		}
+	}
 
 	return resp;
 };
