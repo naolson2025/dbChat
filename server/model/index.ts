@@ -1,5 +1,5 @@
-import { processUserInput } from "./model/model-utils";
-import { promptUser } from "./utils/user-prompts";
+import { processUserInput } from "./model-utils";
+import { promptUser } from "../utils/user-prompts";
 
 const run = async () => {
 	console.log("I'm your DB assistant how can I help? (type 'exit' to quit)");
