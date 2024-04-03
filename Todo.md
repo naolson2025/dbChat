@@ -11,7 +11,7 @@
 - [ ] Display query results in a table
 - [x] Add chat history
 - [x] add prompt loop until I have a front end
-- [ ] Fix: Currently there is one global chat this would blend history for all users 
+- [ ] Fix: Currently there is one global chat this would blend history for all users (maybe use a session id to separate them)
 
 ### Frontend
 - chat interface
@@ -21,5 +21,7 @@
 
 ### Backend
 - [ ] Add catch all endpoint to serve client side app
-- [ ] Add endpoint to chat with LLM
+- [x] Add endpoint to chat with LLM
+- add endpoint auth
+- [ ] ws currently all connect to one chat, need to separate them
  
