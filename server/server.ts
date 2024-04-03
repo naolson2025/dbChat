@@ -1,8 +1,18 @@
-import { Elysia } from "elysia";
-import { hello } from "./routes/chat.service";
+import { chatHandler } from "./routes/chat.service";
 
-export const app = new Elysia()
-	.get("/", () => Bun.file("./client/hello.html"))
-	.get("/hello", () => hello())
-  .post("/api/chat", (req) => "Chat time!")
-	.listen(3000);
+const server = Bun.serve({
+  port: 8080,
+  async fetch (req) {
+    const path = new URL(req.url).pathname;
+
+    if (path === "/hello") return new Response("Welcome to Bun!");
+
+    if (req.method === "POST" && path === "/api/chat") {
+      return chatHandler(req);
+    }
+
+    return new Response("Page not found", { status: 404 });
+  }
+})
+
+console.log(`Listening on ${server.url}`);

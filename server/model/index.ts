@@ -1,14 +1,11 @@
 import { processUserInput } from "./model-utils";
-import { promptUser } from "../utils/user-prompts";
 
-const run = async () => {
+export const run = async (msg: string) => {
 	console.log("I'm your DB assistant how can I help? (type 'exit' to quit)");
 
 	let exit = false;
 	while (!exit) {
 		try {
-			const msg = await promptUser();
-
 			if (msg === "exit" || !msg) {
 				exit = true;
 				break;
@@ -22,5 +19,3 @@ const run = async () => {
 		}
 	}
 };
-
-run();

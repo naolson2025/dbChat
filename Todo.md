@@ -16,6 +16,8 @@
 ### Frontend
 - chat interface
 - Should have project summary at the top
+- use vite react-ts template to create a static front end
+- vite has SSR, but worry about this later
 
 ### Backend
 - [ ] Add catch all endpoint to serve client side app
