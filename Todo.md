@@ -16,3 +16,10 @@
 - [ ] production build
 - [ ] docker container
 - [ ] deploy
+
+### random ideas
+- need a tailwind ui kit
+  - https://preline.co/docs/index.html
+  - has a lot of free stuff & chat bubbles
+- This might give me the overall layout I need
+  - https://preline.co/examples/blog-articles.html

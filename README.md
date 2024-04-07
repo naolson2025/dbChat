@@ -1,15 +1,7 @@
-# dbchat
+## Run the cli interface
 
-To install dependencies:
+```bun run scripts/cli-run.ts```
 
-```bash
-bun install
-```
+## Run the web server
 
-To run:
-
-```bash
-bun run index.ts
-```
-
-This project was created using `bun init` in bun v1.0.35. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+```bun run server/server.ts```
