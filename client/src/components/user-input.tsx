@@ -1,6 +1,6 @@
 export const UserInput = () => {
 	return (
-		<div className="fixed bottom-0 text-white py-8">
+		<div className="w-full fixed bottom-0 text-white p-8 flex items-center justify-center">
 			<input
 				type="text"
 				className="bg-gray-600 rounded-lg px-4 py-2 flex-1 focus:outline-none focus:ring-2 focus:ring-blue-600"
