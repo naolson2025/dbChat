@@ -17,6 +17,19 @@ function App() {
 
   const handleSendMessage = (message: string) => {
     setMessages([...messages, { role: 'user', text: message }]);
+    // POST request to /api/chat
+    fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ message }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setMessages([...messages, { role: 'model', text: data.resp }]);
+      })
+      .catch((err) => console.error(err));
   };
   
 	return (
