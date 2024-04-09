@@ -1,27 +1,24 @@
+import type { Message } from "../App";
 import { LeftBubble } from "./left-bubble";
 import { RightBubble } from "./right-bubble";
 
-export const ChatFeed = () => {
-  return (
-    <>
-      <div className="h-screen overflow-auto py-4 px-20">
-        <ul className="space-y-5">
-          <LeftBubble text="hello world" />
-          <LeftBubble text="hello world here is a bunch more text giv eme more text to test with what will this look like ok more no more" />
-          <LeftBubble text="hello world" />
-          <RightBubble text="Goodbye world!" />
-          <LeftBubble text="hello world" />
-          <RightBubble text="Goodbye world!" />
-          <RightBubble text="Goodbye world!" />
-          <RightBubble text="Goodbye world!" />
-          <LeftBubble text="hello world" />
-          <LeftBubble text="hello world" />
-          <LeftBubble text="hello world" />
-          <RightBubble text="Goodbye world!" />
-          <LeftBubble text="hello world" />
-          <LeftBubble text="hello world" />
-        </ul>
-      </div>
-    </>
-  );
+interface ChatFeedProps {
+	messages: Message[];
+}
+
+export const ChatFeed = (props: ChatFeedProps) => {
+	return (
+		<div className="overflow-auto py-4 px-20 max-w-2xl">
+			<ul className="space-y-5">
+				{props.messages.map((message) => {
+          // using a unique key for each message, bc index is not recommended
+          const key = Math.random().toString(36).substring(7);
+					if (message.role === "user") {
+						return <RightBubble key={key} text={message.text} />;
+					}
+					return <LeftBubble key={key} text={message.text} />;
+				})}
+			</ul>
+		</div>
+	);
 };
