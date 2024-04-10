@@ -8,7 +8,7 @@ interface ChatFeedProps {
 
 export const ChatFeed = (props: ChatFeedProps) => {
 	return (
-		<div className="overflow-auto py-4 px-20 max-w-2xl">
+		<div className="overflow-auto pt-4 px-20 max-w-2xl pb-32">
 			<ul className="space-y-5">
 				{props.messages.map((message) => {
           // using a unique key for each message, bc index is not recommended
