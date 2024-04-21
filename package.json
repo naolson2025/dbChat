@@ -3,7 +3,9 @@
   "module": "index.ts",
   "type": "module",
   "scripts": {
-    "dev": "bun --watch server/server.ts"
+    "server": "bun --watch server/server.ts",
+    "client": "cd client && bun run dev",
+    "dev": "bun run server & bun run client"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.6.3",
