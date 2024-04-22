@@ -2,6 +2,7 @@ import type { GenerateContentResult } from "@google/generative-ai";
 import { getColumns, runQuery } from "../db/query-db";
 import { chat } from "./model";
 import { SQLiteError } from "bun:sqlite";
+import type { ServerWebSocket } from "bun";
 
 export const handleRequestedTool = async (
 	modelResp: GenerateContentResult,
@@ -35,6 +36,7 @@ export const handleRequestedTool = async (
 export const processUserInput = async (msg: string) => {
 	let resp = "LLM failed to return a response";
 	let result = await chat.sendMessage(msg);
+  console.log(JSON.stringify(chat.params?.history));
 
 	for (let i = 0; i < 5; i++) {
 		if (result?.response?.text()) {
@@ -62,3 +64,33 @@ export const processUserInput = async (msg: string) => {
 
 	return resp;
 };
+
+export const wsProcessUserInput = async (ws: ServerWebSocket<unknown>, msg: string) => {
+  let result = await chat.sendMessage(msg);
+  ws.send(JSON.stringify(chat.params?.history?.at(-1)));
+  
+	for (let i = 0; i < 5; i++) {
+    if (result?.response?.text()) {
+			break;
+		}
+
+		try {
+			// if we have data, that means a tool was used
+			const data = await handleRequestedTool(result);
+			if (data) {
+				result = await chat.sendMessage(JSON.stringify(data));
+        ws.send(JSON.stringify(chat.params?.history?.at(-1)))
+			}
+		} catch (error) {
+			if (error instanceof SQLiteError) {
+				result = await chat.sendMessage(
+					`The query did not work, provide a new query, here is the error: ${error.message}`,
+				);
+        ws.send(JSON.stringify(chat.params?.history?.at(-1)))
+			} else {
+        ws.send("An internal server error occured");
+				throw error;
+			}
+		}
+	}
+}

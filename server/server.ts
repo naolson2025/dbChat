@@ -1,4 +1,6 @@
-import { chatHandler, wsChatHandler } from "./handlers/chat.handler";
+import { chatHandler } from "./handlers/chat.handler";
+import { chat } from "./model/model";
+import { wsProcessUserInput } from "./model/model-utils";
 
 const server = Bun.serve({
   port: 8080,
@@ -23,12 +25,15 @@ const server = Bun.serve({
   },
   websocket: {
     open (ws) {
-      ws.send("I'm your database assistant, how can I help?")
+      ws.send(JSON.stringify(chat.params?.history) || "No history found");
     },
     // run every time a message is received
     async message (ws, message) {
-      const resp = await wsChatHandler(String(message));
-      ws.send(resp)
+      try {
+        await wsProcessUserInput(ws, String(message));
+      } catch (error) {
+        ws.send("An internal server error occured");
+      }
     },
     close (ws) {
       console.log("WebSocket closed")

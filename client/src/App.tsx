@@ -1,41 +1,53 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChatFeed } from "./components/chat-feed";
 import { UserInput } from "./components/user-input";
-
-export interface Message {
-	role: "user" | "model";
-	text: string;
-}
+import type { Message } from "./types";
 
 function App() {
-	const [messages, setMessages] = useState<Message[]>([
-		{
-			role: "model",
-			text: "How can I assist you?",
-		}
-	]);
+	const [messages, setMessages] = useState<Message[]>([]);
+	const [ws, setWs] = useState<WebSocket | null>(null);
+
+	// on mount connect to websocket
+	useEffect(() => {
+		const ws = new WebSocket("ws://localhost:8080/api/chat");
+		ws.onopen = () => {
+			console.log("Connected to WebSocket");
+		};
+		ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      // if event.data is an array, set messages
+      // this loads all messages from history
+      if (Array.isArray(data)) {
+        return setMessages(data);
+      }
+
+      // append new message to messages
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        data,
+      ]);
+		};
+		ws.onerror = (error) => {
+			console.error(error);
+		};
+		ws.onclose = () => {
+			console.log("Disconnected from WebSocket");
+		};
+		setWs(ws);
+		return () => {
+			ws.close();
+		};
+	}, []);
 
 	const handleSendMessage = (message: string) => {
 		setMessages((prevMessages) => [
 			...prevMessages,
-			{ role: "user", text: message },
+			{ role: "user", parts: [{ text: message }] },
 		]);
-		// POST request to /api/chat
-		fetch("/api/chat", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({ message }),
-		})
-			.then((res) => res.json())
-			.then((data) => {
-				setMessages((prevMessages) => [
-					...prevMessages,
-					{ role: "model", text: data.resp },
-				]);
-			})
-			.catch((err) => console.error(err));
+
+		if (ws) {
+			ws.send(message);
+		}
 	};
 
 	return (

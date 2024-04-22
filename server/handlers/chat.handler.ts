@@ -27,12 +27,3 @@ export const chatHandler = async (req: Request) => {
 		return new Response("An internal server error occured", { status: 500 });
 	}
 };
-
-export const wsChatHandler = async (msg: string) => {
-  try {
-    const resp = await processUserInput(msg);
-    return resp;
-  } catch (error) {
-    return "An internal server error occured";
-  }
-};
