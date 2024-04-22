@@ -18,6 +18,10 @@ export const handleRequestedTool = async (
 		};
 		const sqlQuery = args?.sqlQuery?.replace(/"/g, "");
 		if (!sqlQuery) throw new Error("No Query Provided to runQuery");
+    
+    if (sqlQuery.match(/(drop|delete|update)/i)) {
+      throw new Error("Invalid query provided");
+    }
 		return await runQuery(sqlQuery);
 	}
 
@@ -79,6 +83,7 @@ export const wsProcessUserInput = async (ws: ServerWebSocket<unknown>, msg: stri
 			const data = await handleRequestedTool(result);
 			if (data) {
 				result = await chat.sendMessage(JSON.stringify(data));
+        ws.send(JSON.stringify(chat.params?.history?.at(-2)))
         ws.send(JSON.stringify(chat.params?.history?.at(-1)))
 			}
 		} catch (error) {
@@ -86,6 +91,7 @@ export const wsProcessUserInput = async (ws: ServerWebSocket<unknown>, msg: stri
 				result = await chat.sendMessage(
 					`The query did not work, provide a new query, here is the error: ${error.message}`,
 				);
+        ws.send(JSON.stringify(chat.params?.history?.at(-2)))
         ws.send(JSON.stringify(chat.params?.history?.at(-1)))
 			} else {
         ws.send("An internal server error occured");
