@@ -1,8 +1,12 @@
 import { chatHandler } from "./handlers/chat.handler";
-import { chat } from "./model/model";
+import { destroyChatInstance, getChatInstance } from "./model/model";
 import { wsProcessUserInput } from "./model/model-utils";
 
-const server = Bun.serve({
+export type WebSocketData = {
+  sessionId: string;
+};
+
+const server = Bun.serve<WebSocketData>({
   port: 8080,
   async fetch (req, server) {
     const path = new URL(req.url).pathname;
@@ -15,7 +19,16 @@ const server = Bun.serve({
 
     if (req.method === "GET" && path === "/api/chat") {
       console.log("Upgrade to websocket...")
-      const success = server.upgrade(req);
+      const sessionId = Math.random().toString(36).substring(7)
+      console.log(`SessionId: ${sessionId}`)
+      const success = server.upgrade(req, {
+        headers: {
+          "Set-Cookie": `SessionId=${sessionId}`
+        },
+        data: {
+          sessionId
+        }
+      });
       return success
         ? undefined
         : new Response("WebSocket upgrade error", { status: 400 });
@@ -25,7 +38,10 @@ const server = Bun.serve({
   },
   websocket: {
     open (ws) {
-      ws.send(JSON.stringify(chat.params?.history) || "No history found");
+      // get new chat instance
+      const chatInstance = getChatInstance(ws.data.sessionId);
+      console.log(chatInstance.params?.history)
+      ws.send(JSON.stringify(chatInstance.params?.history) || "No history found");
     },
     // run every time a message is received
     async message (ws, message) {
@@ -36,6 +52,9 @@ const server = Bun.serve({
       }
     },
     close (ws) {
+      // destroy chat instance
+      console.log("Destroying chat instance...")
+      destroyChatInstance(ws.data.sessionId);
       console.log("WebSocket closed")
     }
   },

@@ -5,7 +5,7 @@
 - [x] Give it a function to make general db queries
 - [ ] Create chat history from scratch so only the user vs model messages are categorized correctly
 - [ ] Create a tool to have the LLM return data in a table format
-- [ ] Each client should have their own chat history (currently only one chat history is kept)
+- [x] Each client should have their own chat history (currently only one chat history is kept)
 - [x] keeps conversation history temporarily
 
 ### App Features

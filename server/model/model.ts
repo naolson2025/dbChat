@@ -1,5 +1,7 @@
 import {
+	type ChatSession,
 	GoogleGenerativeAI,
+	type StartChatParams,
 } from "@google/generative-ai";
 import { tools } from "./tools";
 
@@ -10,7 +12,7 @@ const model = genAI.getGenerativeModel(
 	{ apiVersion: "v1beta" },
 );
 
-export const chat = model.startChat({
+const chatConfig: StartChatParams = {
 	history: [
 		{
 			role: "user",
@@ -32,4 +34,24 @@ export const chat = model.startChat({
 			parts: [{ text: "How can I assist you?" }],
 		},
 	],
-});
+};
+
+interface ChatInstances {
+	[key: string]: ChatSession;
+}
+
+const chatInstances: ChatInstances = {};
+
+export const getChatInstance = (sessionId: string) => {
+	if (!chatInstances[sessionId]) {
+		chatInstances[sessionId] = model.startChat(structuredClone(chatConfig));
+	}
+
+	return chatInstances[sessionId];
+};
+
+export const destroyChatInstance = (sessionId: string) => {
+  delete chatInstances[sessionId];
+};
+
+export const chat = model.startChat(chatConfig);
